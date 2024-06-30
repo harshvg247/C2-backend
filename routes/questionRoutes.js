@@ -7,6 +7,6 @@ router.post('/addQuestion', authMiddleware, questionController.addQuestion);
 router.post('/toggleRevise', authMiddleware, questionController.toggleRevise);
 router.post('/toggleCompleted', authMiddleware, questionController.toggleCompleted);
 router.post('/saveNotes', authMiddleware, questionController.saveNotes);
-
+router.post('/deleteQuestion', authMiddleware, questionController.deleteQuestion);
 
 module.exports = router;

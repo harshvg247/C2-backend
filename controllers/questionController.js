@@ -4,16 +4,12 @@ const User = require('../models/users');
 exports.addQuestion = async (req, res) => {
     const { category, subCategory, title, link } = req.body;
     const user = await User.findById(req.user.user_id);
-
     if (!user) {
         return res.status(404).json({ message: 'User not found' });
     }
-
     // To select a subcategory with a given value from a user's categories in MongoDB, you can use the MongoDB query operators in combination with Mongoose methods to match the specific subcategory
-
     // Find the category
     let cat = user.categories.find(cat => cat.name.toLowerCase() === category.toLowerCase());
-    console.log(cat);
     if (!cat) {
         // If category doesn't exist, create it with the subcategory and question
         cat = {
@@ -34,7 +30,7 @@ exports.addQuestion = async (req, res) => {
             // If subcategory exists, add the question to it
             let question = subCat.questions.find(question => question.title === title);
             if (question) {
-                return res.status(409).json({message:"Question with same title already exists"});
+                return res.status(409).json({ message: "Question with same title already exists" });
             } else {
                 subCat.questions.push({ title: title, link: link });
             }
@@ -46,10 +42,22 @@ exports.addQuestion = async (req, res) => {
             });
         }
     }
-
     // Save the updated user document
     await user.save();
+    return res.status(200).json({ user: user });
+}
 
+exports.deleteQuestion = async (req, res) => {
+    const { category, subCategory, title } = req.body;
+    const user = await User.findById(req.user.user_id);
+    if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+    }
+    let cat = user.categories.find((cat) => cat.name == category);
+
+    let subCat = cat.subCategories.find((subCat) => subCat.name == subCategory);
+    subCat.questions.splice(subCat.questions.findIndex(question => question.title == title), 1);
+    await user.save();
     return res.status(200).json({ user: user });
 }
 
