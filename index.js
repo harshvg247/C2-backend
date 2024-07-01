@@ -20,7 +20,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/question', questionRoutes);
 
-app.get("/", authMiddleware, (req, res)=>{
+app.get("/", (req, res)=>{
     res.status(200).send("welcome");
 })
 
