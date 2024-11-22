@@ -54,9 +54,37 @@ exports.deleteQuestion = async (req, res) => {
         return res.status(404).json({ message: 'User not found' });
     }
     let cat = user.categories.find((cat) => cat.name == category);
-
     let subCat = cat.subCategories.find((subCat) => subCat.name == subCategory);
-    subCat.questions.splice(subCat.questions.findIndex(question => question.title == title), 1);
+    subCat.questions.splice(subCat.questions.indexOf(title), 1);
+    await user.save();
+    return res.status(200).json({ user: user });
+}
+
+exports.deleteSubCategory = async (req, res) => {
+    const { category, subCategory } = req.body;
+    console.log(category, subCategory);
+    
+    const user = await User.findById(req.user.user_id);
+    if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+    }
+    let cat = user.categories.find((c) => c.name == category);
+    cat.subCategories.splice(cat.subCategories.findIndex((subcat)=>subcat.name===subCategory), 1);
+    await user.save();
+    return res.status(200).json({ user: user });
+}
+
+exports.deleteCategory = async (req, res) => {
+    const { category } = req.body;
+    const user = await User.findById(req.user.user_id);
+    if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+    }
+    console.log(category);
+    const index = user.categories.findIndex((cat)=>cat.name===category);
+    console.log(index);
+    
+    user.categories.splice(index, 1);
     await user.save();
     return res.status(200).json({ user: user });
 }
